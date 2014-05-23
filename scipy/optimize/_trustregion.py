@@ -196,9 +196,10 @@ def _minimize_trust_region(fun, x0, args=(), jac=None, hess=None, hessp=None,
             trust_radius *= 0.25
         elif rho > 0.75 and hits_boundary:
             trust_radius = min(2*trust_radius, max_trust_radius)
-
+        print('trust_radius = {0}'.format(trust_radius))
         # if the ratio is high enough then accept the proposed step
         if rho > eta:
+            print('rho = {0} > eta = {1}'.format(rho, eta))
             x = x_proposed
             m = m_proposed
 
@@ -207,6 +208,7 @@ def _minimize_trust_region(fun, x0, args=(), jac=None, hess=None, hessp=None,
             allvecs.append(x)
         if callback is not None:
             callback(x)
+            print(m.fun)
         k += 1
 
         # check if the gradient is small enough to stop
@@ -231,7 +233,7 @@ def _minimize_trust_region(fun, x0, args=(), jac=None, hess=None, hessp=None,
             print(status_messages[warnflag])
         else:
             print('Warning: ' + status_messages[warnflag])
-        print("         Current function value: %f" % m())
+        print("         Current function value: %g" % m.fun)
         print("         Iterations: %d" % k)
         print("         Function evaluations: %d" % nfun[0])
         print("         Gradient evaluations: %d" % njac[0])

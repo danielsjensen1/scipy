@@ -74,7 +74,10 @@ class CGSteihaugSubproblem(BaseQuadraticSubproblem):
         d = -r
 
         # Search for the min of the approximation of the objective function.
+        i = 0
         while True:
+            i += 1
+#             print('CG {0}'.format(i))
 
             # do an iteration
             Bd = self.hessp(d)
@@ -92,6 +95,7 @@ class CGSteihaugSubproblem(BaseQuadraticSubproblem):
                 else:
                     p_boundary = pb
                 hits_boundary = True
+                print('nonpositive curvature, {0} CG iterations'.format(i))
                 return p_boundary, hits_boundary
             r_squared = np.dot(r, r)
             alpha = r_squared / dBd
@@ -102,11 +106,13 @@ class CGSteihaugSubproblem(BaseQuadraticSubproblem):
                 ta, tb = self.get_boundaries_intersections(z, d, trust_radius)
                 p_boundary = z + tb * d
                 hits_boundary = True
+                print('outside trust region, {0} CG iterations'.format(i))
                 return p_boundary, hits_boundary
             r_next = r + alpha * Bd
             r_next_squared = np.dot(r_next, r_next)
-            if math.sqrt(r_next_squared) < tolerance:
+            if math.sqrt(r_next_squared) < tolerance or i > 10000:
                 hits_boundary = False
+                print('tolerance = {0}, {1} CG iterations'.format(tolerance, i))
                 return z_next, hits_boundary
             beta_next = r_next_squared / r_squared
             d_next = -r_next + beta_next * d
